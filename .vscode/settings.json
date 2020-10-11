@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "/home/pi/subsync_translate/venv/bin/python3.7",
+    "python.dataScience.jupyterServerURI": "local"
+}

@@ -1,0 +1,2 @@
+# Subsync Translate
+Use a reference srt subtitle file to syncronize a given srt file in another language. It tries to match the first sentence of the given subtitle to the reference one, offsets the given subtitle if a confident match is found.

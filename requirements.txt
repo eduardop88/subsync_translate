@@ -1,3 +1,4 @@
 pysrt
 googletrans
 fuzzywuzzy[speedup]
+ffmpeg-python

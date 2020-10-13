@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "subsync_translate"
+version = "0.1.0"
+description = "Use a reference srt subtitle file to syncronize a given srt file in another language"
+authors = ["Eduardo Pichardo <eduardopp88@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+googletrans = "^3.0.0"
+fuzzywuzzy = {extras = ["speedup"], version = "^0.18.0"}
+pysrt = "^1.1.0"
+ffmpeg-python = "^0.2.0"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+subsync_translate = 'subsync_translate:main'
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

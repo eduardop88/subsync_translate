@@ -5,6 +5,8 @@ import pysrt
 import re
 from googletrans import Translator
 from fuzzywuzzy import fuzz
+import ffmpeg
+import tempfile
 
 
 def validate_args(args):
@@ -12,13 +14,18 @@ def validate_args(args):
         raise FileNotFoundError
     if not os.path.exists(args.input):
         raise FileNotFoundError
+    
+    if args.output is None:
+        filename_list = args.input.split('.')
+        filename_list.insert(-1, 'synced')
+        args.output = '.'.join(filename_list)
+
 
 
 def remove_os_markings(parsed_input):
     for sub in parsed_input:
         if re.search('opensubtitles', sub.text, flags=re.IGNORECASE) is not None:
             parsed_input.remove(sub)
-
 
 def process_compare_and_shift(args):
     parsed_reference = pysrt.open(args.reference)
@@ -54,18 +61,36 @@ def process_compare_and_shift(args):
 
     return parsed_input
 
+def extract_subtitles_from_mkv(args, temp_dir):
+    sub_path = os.path.join(temp_dir, 'included_sub.srt')
+
+    probe = ffmpeg.probe(args.reference)
+    sub_stream = next((stream for stream in probe['streams'] if (stream['codec_type'] == 'subtitle' and stream['tags']['language'] == 'eng')), None)
+    sub_index = str(sub_stream['index'])
+    input_mm = ffmpeg.input(args.reference)
+
+    print(f'Extracting embeded subtitle to {sub_path}')
+    out, _ = ffmpeg.output(input_mm[sub_index], sub_path).run(capture_stdout=True)
+
+    args.reference = sub_path
+
 
 def main():
     parser = argparse.ArgumentParser(prog="Subsync translate")
-    parser.add_argument("reference", help="Reference subtitle")
+    parser.add_argument("reference", help="Reference subtitle or video")
     parser.add_argument("input", help="Input subtitle")
     parser.add_argument("-o", "--output", help="Path for the output subtitle",
-                        dest="output", default='output.srt')
+                        dest="output")
     args = parser.parse_args()
 
     validate_args(args)
-    result_sub = process_compare_and_shift(args)
-    result_sub.save(args.output)
+
+    with tempfile.TemporaryDirectory() as dir_path:
+        if args.reference.endswith('.mkv'):
+            extract_subtitles_from_mkv(args, dir_path)
+
+        result_sub = process_compare_and_shift(args)
+        result_sub.save(args.output)
 
 
 if __name__ == "__main__":

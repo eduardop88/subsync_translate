@@ -10,8 +10,11 @@ googletrans = "^3.0.0"
 fuzzywuzzy = {extras = ["speedup"], version = "^0.18.0"}
 pysrt = "^1.1.0"
 ffmpeg-python = "^0.2.0"
+subliminal = "^2.1.0"
+babelfish = "^0.5.5"
 
 [tool.poetry.dev-dependencies]
+autopep8 = "^1.5.4"
 
 [tool.poetry.scripts]
 subsync_translate = 'subsync_translate:main'
